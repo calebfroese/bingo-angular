@@ -20,8 +20,18 @@
     "@angular/platform-browser": "^6.1.0",
     "@angular/platform-browser-dynamic": "^6.1.0",
     "@angular/router": "^6.1.0",
+    "apollo-angular": "1.0.0",
+    "apollo-angular-link-http": "1.0.1",
+    "apollo-cache-inmemory": "1.1.4",
+    "apollo-client": "2.2.0",
+    "aws-amplify": "0.4.8",
+    "aws-amplify-angular": "0.1.6",
+    "aws-appsync": "1.0.12",
+    "graphql": "^0.11.7",
+    "graphql-tag": "^2.5.0",
     "core-js": "^2.5.4",
     "rxjs": "^6.0.0",
+    "typed-graphql": "^1.0.2",
     "zone.js": "~0.8.26"
   },
   "devDependencies": {
