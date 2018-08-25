@@ -3,7 +3,11 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  apiKey: 'da2-glwh43llbnbwlg6uwoybqejesi',
+  awsRegion: 'ap-southeast-2',
+  graphqlEndpoint:
+    'https://hnjoa2nylnbq5crugg6iqn25um.appsync-api.us-east-1.amazonaws.com/graphql'
 };
 
 /*
