@@ -6,7 +6,7 @@ import { environment } from '../environments/environment';
 
 @Injectable()
 export class AppsyncService {
-  hc;
+  hc: () => Promise<AWSAppSyncClient>;
 
   constructor() {
     const client = new AWSAppSyncClient({

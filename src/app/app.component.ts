@@ -1,6 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { AppsyncService } from './appsync.service';
 
+import gql from 'graphql-tag';
+
+const join = gql`
+  mutation joinGame($username: String!) {
+    joinGame(username: $username)
+  }
+`;
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -13,7 +21,10 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.service.hc().then(client => {
-      console.log(client);
+      client.mutate({
+        mutation: join,
+        variables: { username: 'Caleb' }
+      });
     });
   }
 }

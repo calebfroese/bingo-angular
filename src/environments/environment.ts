@@ -4,10 +4,10 @@
 
 export const environment = {
   production: false,
-  apiKey: 'da2-glwh43llbnbwlg6uwoybqejesi',
+  apiKey: 'da2-i2rusmclabd2tfublzwy6os4xm',
   awsRegion: 'ap-southeast-2',
   graphqlEndpoint:
-    'https://hnjoa2nylnbq5crugg6iqn25um.appsync-api.us-east-1.amazonaws.com/graphql'
+    'https://3hqoq6ioxnhlvm477hszn66hji.appsync-api.us-east-1.amazonaws.com/graphql'
 };
 
 /*
