@@ -1,0 +1,109 @@
+Description: >
+  bingo-aws
+
+  CloudFormation template for bingo-angular backend
+
+Resources:
+  BingoTable:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: 'username'
+          AttributeType: 'S'
+      KeySchema:
+        - AttributeName: 'username'
+          KeyType: 'HASH'
+      ProvisionedThroughput:
+        ReadCapacityUnits: '5'
+        WriteCapacityUnits: '5'
+
+  # Allow service role to access DynamoDB table
+  DynamoDBAccessPolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: 'dynamodb-access'
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: 'Allow'
+            Action: 'dynamodb:*'
+            Resource:
+              - !GetAtt BingoTable.Arn
+      Roles:
+        - Ref: 'ServiceRole'
+
+  # Allow AppSync to assume service role
+  ServiceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: 'Allow'
+            Principal:
+              Service:
+                - 'appsync.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      Path: '/'
+
+  # GraphQL Api
+  BingoQLApi:
+    Type: AWS::AppSync::GraphQLApi
+    Properties:
+      Name: 'BingoQL'
+      AuthenticationType: API_KEY
+
+  # GraphQL Schema
+  BingoQLSchema:
+    Type: AWS::AppSync::GraphQLSchema
+    Properties:
+      ApiId: !GetAtt BingoQLApi.ApiId
+      Definition: |
+        schema {
+          query: Query
+          mutation: Mutation
+          subscription: Subscription
+        }
+        type Query {
+          allEventType: [EventType]!
+          tableId(organisations:[String]!): String
+        }
+        type Mutation {
+          joinGame(username:String): String
+        }
+
+  # AppSync Datasource
+  BingoDataSource:
+    Type: 'AWS::AppSync::DataSource'
+    Properties:
+      ApiId: !GetAtt BingoQLApi.ApiId
+      Name: 'BingoDataSource'
+      Description: 'AppSync datasource to bingo DynamoDB table'
+      Type: 'AMAZON_DYNAMODB'
+      ServiceRoleArn: !GetAtt ServiceRole.Arn
+      DynamoDBConfig:
+        TableName: !Ref BingoTable
+        AwsRegion: !Ref "AWS::Region"
+
+  # Resolvers
+  JoinGameResolver:
+    Type: AWS::AppSync::Resolver
+    Properties:
+      ApiId: !GetAtt BingoQLApi.ApiId
+      TypeName: 'Mutation'
+      FieldName: 'joinGame'
+      DataSourceName: !GetAtt BingoDataSource.Name
+      RequestMappingTemplate: |
+        {
+            "version" : "2017-02-28",
+            "operation" : "PutItem",
+            "key" : {
+                "username" : { "S" : "${ctx.arguments.username}" }
+            },
+            "attributeValues" : {
+                "table": $util.dynamodb.toDynamoDBJson($ctx.arguments.organisations)
+            }
+        }
+      ResponseMappingTemplate: |
+        "$utils.toJson($ctx.result)"

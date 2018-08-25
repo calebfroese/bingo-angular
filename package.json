@@ -7,7 +7,9 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "cf": "aws cloudformation deploy --template-file template.yml --stack-name bingo --capabilities CAPABILITY_NAMED_IAM",
+    "cf:down": "aws cloudformation delete-stack --stack-name bingo"
   },
   "private": true,
   "dependencies": {
