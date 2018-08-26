@@ -66,10 +66,17 @@ export class AppComponent implements OnInit {
   }
 
   joinGame(username: string) {
-    this.client.mutate({
-      mutation: joinGame,
-      optimisticResponse: { joinGame: { username } },
-      variables: { username }
-    });
+    this.client
+      .mutate({
+        mutation: joinGame,
+        optimisticResponse: {
+          __typename: 'Mutation',
+          joinGame: { __typename: 'Player', username }
+        },
+        variables: { username }
+      })
+      .then(({ data }: any) => {
+        this.players = [...this.players, data.joinGame];
+      });
   }
 }
