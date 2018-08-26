@@ -9,6 +9,7 @@
 <ul>
   <li *ngFor="let player of players">
     <h2>{{ player.username }}</h2>
+    <p>{{ player.card | json }}</p>
   </li>
 </ul>
 

@@ -8,6 +8,7 @@ const joinGame = gql`
   mutation joinGame($username: String!) {
     joinGame(username: $username) {
       username
+      card
     }
   }
 `;
@@ -15,6 +16,7 @@ const allPlayers = gql`
   query {
     allPlayers {
       username
+      card
     }
   }
 `;
@@ -23,6 +25,7 @@ const playersChanged = gql`
   subscription {
     subscribeToPlayersChanged {
       username
+      card
     }
   }
 `;
@@ -66,17 +69,9 @@ export class AppComponent implements OnInit {
   }
 
   joinGame(username: string) {
-    this.client
-      .mutate({
-        mutation: joinGame,
-        optimisticResponse: {
-          __typename: 'Mutation',
-          joinGame: { __typename: 'Player', username }
-        },
-        variables: { username }
-      })
-      .then(({ data }: any) => {
-        this.players = [...this.players, data.joinGame];
-      });
+    this.client.mutate({
+      mutation: joinGame,
+      variables: { username }
+    });
   }
 }
