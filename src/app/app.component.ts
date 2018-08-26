@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AppsyncService } from './appsync.service';
+import { ApolloClient } from 'apollo-client';
 
 import gql from 'graphql-tag';
 
@@ -33,8 +34,8 @@ const playersChanged = gql`
 })
 export class AppComponent implements OnInit {
   username = '';
-  client: any;
   players: any[];
+  client: ApolloClient<any>;
 
   constructor(public service: AppsyncService) {}
 
@@ -53,7 +54,7 @@ export class AppComponent implements OnInit {
 
       const subscription = obs.subscribeToMore({
         document: playersChanged,
-        updateQuery: (prev: any, data) => ({
+        updateQuery: (prev: any, data: any) => ({
           ...prev,
           allPlayers: [
             ...prev.allPlayers,
@@ -67,6 +68,7 @@ export class AppComponent implements OnInit {
   joinGame(username: string) {
     this.client.mutate({
       mutation: joinGame,
+      optimisticResponse: { joinGame: { username } },
       variables: { username }
     });
   }
